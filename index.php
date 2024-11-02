@@ -1,66 +1,68 @@
 <?php
-include_once 'database.php'; // 
-include_once 'gudang.php';  
+require_once 'Config.php';
+require_once 'Gudang.php';
 
 $database = new Database();
-$db = $database->connect();
-$gudang = new gudang($db);
+$db = $database->getConnection();
 
-if (isset($_POST['submit'])) {
-    $gudang->name = $_POST['name'];
-    $gudang->location = $_POST['location'];
-    $gudang->capacity = $_POST['capacity'];
-    $gudang->opening_hour = $_POST['opening_hour'];
-    $gudang->closing_hour = $_POST['closing_hour'];
+$gudang = new Gudang($db);
 
-    if ($gudang->create()) {
-        echo "Gudang berhasil ditambahkan!";
-    } else {
-        echo "Gagal menambahkan gudang.";
-    }
-}
 ?>
 
-<h2>Tambah Gudang Baru</h2>
-<form method="POST" action="">
-    <input type="text" name="name" placeholder="Nama Gudang" required>
-    <input type="text" name="location" placeholder="Lokasi Gudang" required>
-    <input type="number" name="capacity" placeholder="Kapasitas Gudang" required>
-    <input type="time" name="opening_hour" placeholder="Jam Buka" required>
-    <input type="time" name="closing_hour" placeholder="Jam Tutup" required>
-    <input type="submit" name="submit" value="Tambah Gudang">
-</form>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tambah Gudang</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Tambah Gudang</h1>
 
-<?php
-$stmt = $gudang->read();
+        <?php if (isset($message)): ?>
+            <div class="alert alert-info"><?php echo $message; ?></div>
+        <?php endif; ?>
 
-echo "<h2>Daftar Gudang</h2>";
-echo "<table border='1'>
-        <tr>
-            <th>ID</th>
-            <th>Nama Gudang</th>
-            <th>Lokasi</th>
-            <th>Kapasitas</th>
-            <th>Status</th>
-            <th>Jam Buka</th>
-            <th>Jam Tutup</th>
-            <th>Aksi</th>
-        </tr>";
-        
-while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-    echo "<tr>
-            <td>{$row['id']}</td>
-            <td>{$row['name']}</td>
-            <td>{$row['location']}</td>
-            <td>{$row['capacity']}</td>
-            <td>{$row['status']}</td>
-            <td>{$row['opening_hour']}</td>
-            <td>{$row['closing_hour']}</td>
-            <td>
-                <a href='update.php?id={$row['id']}'>Edit</a> |
-                <a href='delete.php?id={$row['id']}'>Hapus</a>
-            </td>
-        </tr>";
-}
-echo "</table>";
-?>
+        <form method="POST">
+            <div class="form-group">
+                <label for="name">Nama Gudang:</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="location">Lokasi:</label>
+                <input type="text" class="form-control" id="location" name="location" required>
+            </div>
+            <div class="form-group">
+                <label for="capacity">Kapasitas:</label>
+                <input type="number" class="form-control" id="capacity" name="capacity" required>
+            </div>
+            <div class="form-group">
+                <label for="status">Status:</label>
+                <select class="form-control" id="status" name="status" required>
+                    <option value="aktif">Aktif</option>
+                    <option value="tidak_aktif">Tidak Aktif</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="opening_hour">Jam Buka:</label>
+                <input type="time" class="form-control" id="opening_hour" name="opening_hour" required>
+            </div>
+            <div class="form-group">
+                <label for="closing_hour">Jam Tutup:</label>
+                <input type="time" class="form-control" id="closing_hour" name="closing_hour" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Tambah Gudang</button>
+        </form>
+
+        <div class="mt-4">
+            <a href="list_gudang.php" class="btn btn-secondary">Kembali ke Daftar Gudang</a>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
